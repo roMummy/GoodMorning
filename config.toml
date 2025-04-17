@@ -1,6 +1,16 @@
 [GoodMorning]
 enable = true
 
+# 问好黑名单
+blacklist_command_set = ["加入黑名单"]
+blacklist_command_get = ["黑名单"]
+blacklist_command_delete = ["删除黑名单"]
+# 天气
+weather_command_set = ["天气"]
+weather_command_get = ["天气列表"]
+weather_command_delete = ["删除天气"]
+
+
 hello_texts = [
     [
         "今天天气好啊",
