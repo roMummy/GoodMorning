@@ -1,0 +1,2 @@
+# GoodMorning
+wechat bot GoodMorning
