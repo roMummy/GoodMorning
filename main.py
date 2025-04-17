@@ -204,28 +204,27 @@ class GoodMorning(PluginBase):
         return True
 
     # MARK: - 定时任务
-    # @schedule('cron', day_of_week='mon-fri', hour=7, minute=0)
-    @schedule('interval', seconds=60)
+    @schedule('cron', day_of_week='mon-fri', hour=7, minute=0)
     async def daily_task(self, bot: WechatAPIClient):
         if not self.enable:
             return
 
-        # id_list = []
-        # wx_seq, chatroom_seq = 0, 0
-        # while True:
-        #     contact_list = await bot.get_contract_list(wx_seq, chatroom_seq)
-        #     id_list.extend(contact_list["ContactUsernameList"])
-        #     wx_seq = contact_list["CurrentWxcontactSeq"]
-        #     chatroom_seq = contact_list["CurrentChatRoomContactSeq"]
-        #     if contact_list["CountinueFlag"] != 1:
-        #         break
+        id_list = []
+        wx_seq, chatroom_seq = 0, 0
+        while True:
+            contact_list = await bot.get_contract_list(wx_seq, chatroom_seq)
+            id_list.extend(contact_list["ContactUsernameList"])
+            wx_seq = contact_list["CurrentWxcontactSeq"]
+            chatroom_seq = contact_list["CurrentChatRoomContactSeq"]
+            if contact_list["CountinueFlag"] != 1:
+                break
 
-        # chatrooms = []
-        # for id in id_list:
-        #     if id.endswith("@chatroom"):
-        #         chatrooms.append(id)
+        chatrooms = []
+        for id in id_list:
+            if id.endswith("@chatroom"):
+                chatrooms.append(id)
         
-        chatrooms = ["58405787667@chatroom", "53166638591@chatroom"]
+        # chatrooms = ["58405787667@chatroom", "53166638591@chatroom"]
 
         # 黑名单处理
         blacklist_list = [str(item.get("chatroom_wxid")) for item in self.db.get_blacklist()]
