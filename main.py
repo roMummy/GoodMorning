@@ -95,8 +95,8 @@ class GoodMorning(PluginBase):
             return
 
         chatroom_wxid = message["FromWxid"]
-        group_info = await bot.get_chatroom_name(chatroom_wxid)
-        chatroom_nickname = group_info[0]
+        chatroom_info = await bot.get_chatroom_name(chatroom_wxid)
+        chatroom_nickname = chatroom_info.get("room_name")
 
         ok = self.db.add_blacklist(chatroom_wxid=chatroom_wxid,chatroom_nickname=chatroom_nickname)
 
@@ -154,8 +154,8 @@ class GoodMorning(PluginBase):
             return
 
         chatroom_wxid = message["FromWxid"]
-        group_info = await bot.get_chatroom_name(chatroom_wxid)
-        chatroom_nickname = group_info[0]
+        chatroom_info = await bot.get_chatroom_name(chatroom_wxid)
+        chatroom_nickname = chatroom_info.get("room_name")
 
         ok = self.db.add_weather(chatroom_wxid=chatroom_wxid, chatroom_nickname=chatroom_nickname,city=city)
         msg = "设置成功" if ok else "设置失败"
@@ -205,7 +205,7 @@ class GoodMorning(PluginBase):
 
     # MARK: - 定时任务
     # @schedule('cron', day_of_week='mon-fri', hour=7, minute=0)
-    @schedule('interval', seconds=30)
+    @schedule('interval', seconds=60)
     async def daily_task(self, bot: WechatAPIClient):
         if not self.enable:
             return
@@ -389,7 +389,7 @@ class GoodMorning(PluginBase):
             "FromWxid": "4444@chatroom",
             "IsGroup": True,
             "MsgType": 1,
-            "Content": "天气 贵州",
+            "Content": "加入黑名单",
             # "Content": image_data,
             "SenderWxid":"wxid_1s8pwoa9rl6f21",
             "Status": 3,
