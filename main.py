@@ -251,7 +251,7 @@ class GoodMorning(PluginBase):
 
         weekend = ["一", "二", "三", "四", "五", "六", "日"]
         message_parts = [
-            f"早上好！今天是 {datetime.now().strftime('%Y年%m月%d号')}，星期{weekend[datetime.now().weekday()]}"
+            f"早上好！今天是 {datetime.now().strftime('%Y年%m月%d日')}，星期{weekend[datetime.now().weekday()]}"
         ]
         
         if history_today != "N/A":
