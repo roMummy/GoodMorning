@@ -96,10 +96,9 @@ class GoodMorning(PluginBase):
 
         logger.info("g-m:admin")
         chatroom_wxid = message["FromWxid"]
-
-        chatroom_info = await bot.get_chatroom_info(message['FromWxid'])
-        chatroom_nickname = chatroom_info.get("NickName").get("string")
-
+        # chatroom_info = await bot.get_chatroom_info(message['FromWxid'])
+        # chatroom_nickname = chatroom_info.get("NickName").get("string")
+        chatroom_nickname = await bot.get_chatroom_nickname(chatroom_wxid)
         logger.info(f"msg --> {chatroom_nickname}")
         ok = self.db.add_blacklist(chatroom_wxid=chatroom_wxid,chatroom_nickname=chatroom_nickname)
         
@@ -160,8 +159,13 @@ class GoodMorning(PluginBase):
             return
 
         chatroom_wxid = message["FromWxid"]
-        chatroom_info = await bot.get_chatroom_info(message['FromWxid'])
-        chatroom_nickname = chatroom_info.get("NickName").get("string")
+        # chatroom_info = await bot.get_chatroom_info(message['FromWxid'])
+        # chatroom_nickname = chatroom_info.get("NickName").get("string")
+        # chatroom_nickname = await bot.get_chatroom_nickname(chatroom_wxid)
+
+        chatroom_info = await bot.get_chatroom_name(chatroom_wxid)
+        chatroom_nickname = chatroom_info.get("room_name")
+        logger.info(f"msg --> {chatroom_nickname}")
 
         ok = self.db.add_weather(chatroom_wxid=chatroom_wxid, chatroom_nickname=chatroom_nickname,city=city)
         msg = "设置成功" if ok else "设置失败"
