@@ -94,7 +94,7 @@ class GoodMorning(PluginBase):
             return
         logger.info("获取用户信息1111")
         # 获取用户信息
-        user_name = await bot.get_user_remark(message["SenderWxid"])
+        user_name = await bot.get_nickname(message["SenderWxid"])
         logger.info(f"user_name -> {user_name}")
         # 获取群信息
         chatroom_name = await bot.get_chatroom_nickname(message["FromWxid"])
@@ -472,7 +472,7 @@ class GoodMorning(PluginBase):
 
 
         try:
-            # await self.handle_text(bot, json)
+            await self.handle_text(bot, json)
             # await self.weather_get(bot, json)
 
         except Exception as e:
