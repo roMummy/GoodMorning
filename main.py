@@ -34,7 +34,7 @@ class GoodMorning(PluginBase):
 
         main_config = main_config["XYBot"]
         # 获取管理员人员
-        self.admins = main_config["admins"]
+        self.admins = main_config["managers"]
         
         config = plugin_config["GoodMorning"]
 
@@ -94,19 +94,25 @@ class GoodMorning(PluginBase):
         if not await self._check_admin(bot, message):
             return
 
+        logger.info("g-m:admin")
         chatroom_wxid = message["FromWxid"]
-        chatroom_info = await bot.get_chatroom_name(chatroom_wxid)
-        chatroom_nickname = chatroom_info.get("room_name")
 
+        chatroom_info = await bot.get_chatroom_info(message['FromWxid'])
+        chatroom_nickname = chatroom_info.get("NickName").get("string")
+
+        logger.info(f"msg --> {chatroom_nickname}")
         ok = self.db.add_blacklist(chatroom_wxid=chatroom_wxid,chatroom_nickname=chatroom_nickname)
-
+        
         msg = "设置成功" if ok else "设置失败"
+        logger.info(f"msg --> {msg}")
         if ok:
             await bot.send_at_message(message["FromWxid"], "\n" + msg, [message["SenderWxid"]])
         else:
             await bot.send_at_message(message["FromWxid"], "\n" + msg, [message["SenderWxid"]])
 
     async def blacklist_get(self, bot: WechatAPIClient, message: dict):
+        if not await self._check_admin(bot, message):
+            return
         blacklist_list = self.db.get_blacklist()
 
         if len(blacklist_list) == 0:
@@ -114,7 +120,7 @@ class GoodMorning(PluginBase):
             return
 
         reply = [
-            f"问好黑名单\n",
+            f"禁用早晨问候语群列表\n",
             "序号. 群名称",
             "--------------------------------"
         ]
@@ -154,8 +160,8 @@ class GoodMorning(PluginBase):
             return
 
         chatroom_wxid = message["FromWxid"]
-        chatroom_info = await bot.get_chatroom_name(chatroom_wxid)
-        chatroom_nickname = chatroom_info.get("room_name")
+        chatroom_info = await bot.get_chatroom_info(message['FromWxid'])
+        chatroom_nickname = chatroom_info.get("NickName").get("string")
 
         ok = self.db.add_weather(chatroom_wxid=chatroom_wxid, chatroom_nickname=chatroom_nickname,city=city)
         msg = "设置成功" if ok else "设置失败"
@@ -163,6 +169,8 @@ class GoodMorning(PluginBase):
             await bot.send_at_message(message["FromWxid"], "\n" + msg, [message["SenderWxid"]])
 
     async def weather_get(self, bot: WechatAPIClient, message: dict):
+        if not await self._check_admin(bot, message):
+            return
         weathers = self.db.get_weather()
         if len(weathers) == 0:
             await bot.send_at_message(message["FromWxid"], "\n天气列表为空", [message["SenderWxid"]])
@@ -373,7 +381,7 @@ class GoodMorning(PluginBase):
             f"{city}今日天气：\n"
             f"温度：{today.get('wendu', '未知')}\n"
             f"天气：{today.get('tianqi', '未知')}\n"
-            f"风力：{today.get('fengdu', '未知')}\n"
+            # f"风力：{today.get('fengdu', '未知')}\n"
             f"空气质量：{today.get('pm', '未知')}"
         )
 

@@ -2,13 +2,13 @@
 enable = true
 
 # 问好黑名单
-blacklist_command_set = ["加入问候语黑名单"]
-blacklist_command_get = ["问候语黑名单"]
-blacklist_command_delete = ["删除问候语黑名单"]
+blacklist_command_set = ["禁用早晨问候语"]
+blacklist_command_get = ["早晨问候语列表"]
+blacklist_command_delete = ["启用早晨问候语"]
 # 天气
-weather_command_set = ["问候语天气"]
-weather_command_get = ["问候语天气列表"]
-weather_command_delete = ["删除问候语天气"]
+weather_command_set = ["修改城市天为"]
+weather_command_get = ["城市天气列表"]
+weather_command_delete = ["使用默认城市天气"]
 
 hello_texts = [
     [
