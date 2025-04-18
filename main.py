@@ -138,19 +138,50 @@ class GoodMorning(PluginBase):
             await bot.send_at_message(message["FromWxid"], "\n黑名单为空", [message["SenderWxid"]])
             return
 
-        reply = [
-            f"禁用早晨问候语群列表\n",
-            "序号. 群名称",
-            "--------------------------------"
-        ]
-        
-        for i, blacklist in enumerate(blacklist_list, 1):
-            reply.append(f"{i}. {blacklist.get('chatroom_nickname')}")
-            
-        msg = "\n".join(reply)
-        logger.info(f"msg --> {msg}")
+        await self._send_paginated_list(
+            bot=bot,
+            message=message,
+            items=blacklist_list,
+            title="禁用早晨问候语群列表",
+            item_formatter=lambda i, item: f"{i}. {item.get('chatroom_nickname')}"
+        )
 
-        await bot.send_at_message(message["FromWxid"], "\n" + msg, [message["SenderWxid"]])
+    async def _send_paginated_list(self, bot: WechatAPIClient, message: dict, items: list, title: str, item_formatter, page_size: int = 10):
+        """
+        分页发送列表数据
+        Args:
+            bot: 机器人实例
+            message: 消息字典
+            items: 要显示的列表数据
+            title: 标题
+            item_formatter: 格式化每一项的函数
+            page_size: 每页显示数量，默认10条
+        """
+        total_pages = (len(items) + page_size - 1) // page_size  # 向上取整得到总页数
+        
+        for page in range(total_pages):
+            start_idx = page * page_size
+            end_idx = min((page + 1) * page_size, len(items))
+            
+            page_info = f" (第{page + 1}/{total_pages}页)" if total_pages > 1 else ""
+            reply = [
+                f"{title} {page_info}\n",
+                "序号. 群名称",
+                "--------------------------------"
+            ]
+            
+            # 使用传入的格式化函数处理每一项
+            for i, item in enumerate(items[start_idx:end_idx], start_idx + 1):
+                reply.append(item_formatter(i, item))
+                
+            msg = "\n".join(reply)
+            logger.info(f"msg --> {msg}")
+            
+            await bot.send_at_message(message["FromWxid"], "\n" + msg, [message["SenderWxid"]])
+
+            # 等待一段时间，避免消息过于频繁
+            await asyncio.sleep(2)
+
 
     async def blacklist_delete(self, bot: WechatAPIClient, message: dict):
         # 非群聊不处理
@@ -193,21 +224,18 @@ class GoodMorning(PluginBase):
         if not await self._check_admin(bot, message):
             return
         weathers = self.db.get_weather()
+
         if len(weathers) == 0:
             await bot.send_at_message(message["FromWxid"], "\n天气列表为空", [message["SenderWxid"]])
             return
-        reply = [
-            f"天气列表\n",
-            "序号. 群名称 城市",
-        ]
 
-        for i, weather in enumerate(weathers, 1):
-            reply.append(f"{i}. {weather.get('chatroom_nickname')} {weather.get('city')}")
-        
-        msg = "\n".join(reply)
-
-        logger.info(f"msg --> {msg}")
-        await bot.send_at_message(message["FromWxid"], "\n" + msg, [message["SenderWxid"]])
+        await self._send_paginated_list(
+            bot=bot,
+            message=message,
+            items=weathers,
+            title="天气列表",
+            item_formatter=lambda i, item: f"{i}. {item.get('chatroom_nickname')} {item.get('city')}"
+        )
         
     async def weather_delete(self, bot: WechatAPIClient, message: dict):
         # 非群聊不处理
@@ -444,7 +472,8 @@ class GoodMorning(PluginBase):
 
 
         try:
-            await self.handle_text(bot, json)
+            # await self.handle_text(bot, json)
+            # await self.weather_get(bot, json)
 
         except Exception as e:
             logger.error(f"Error: {e}")
