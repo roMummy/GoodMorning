@@ -2,26 +2,29 @@
 enable = true
 
 # 问好黑名单
-blacklist_command_set = ["加入黑名单"]
-blacklist_command_get = ["黑名单"]
-blacklist_command_delete = ["删除黑名单"]
+blacklist_command_set = ["加入问候语黑名单"]
+blacklist_command_get = ["问候语黑名单"]
+blacklist_command_delete = ["删除问候语黑名单"]
 # 天气
-weather_command_set = ["天气"]
-weather_command_get = ["天气列表"]
-weather_command_delete = ["删除天气"]
-
+weather_command_set = ["问候语天气"]
+weather_command_get = ["问候语天气列表"]
+weather_command_delete = ["删除问候语天气"]
 
 hello_texts = [
     [
-        "今天天气好啊",
-        "今天天气真不错"
+        "腾里云在线接单！祝各位老板生意兴隆。"
     ],
     [
-        "早上好",
-        "呀哈哈哈"
+        "事业腾飞正当时, 商祺祝福添吉祥。"
     ],
     [
-        "中午好",
-        "呀哈哈哈"
+        "您的事业蒸蒸日上, 商祺相伴共创辉煌。"
     ],
+    [
+        "笔落惊风雨, 字成祝商祺。",
+        "愿君展宏图, 事业步步升。"
+    ],
+    [
+        "祝您生活愉快，事业蒸蒸日上！"
+    ]
 ]
