@@ -82,8 +82,28 @@ class GoodMorning(PluginBase):
         elif cmd in self.weather_command_delete:
             # 删除天气
             await self.weather_delete(bot, message)
+        elif cmd == "获取用户信息":
+            # 获取用户信息
+            await self.get_user_info(bot, message)
         else:
             return
+
+    async def get_user_info(self, bot: WechatAPIClient, message: dict):
+        """获取用户信息"""
+        if not await self._check_admin(bot, message):
+            return
+        logger.info("获取用户信息1111")
+        # 获取用户信息
+        user_name = await bot.get_user_remark(message["SenderWxid"])
+        logger.info(f"user_name -> {user_name}")
+        # 获取群信息
+        chatroom_name = await bot.get_chatroom_nickname(message["FromWxid"])
+
+        msg = f"用户名: {user_name}\n群聊名: {chatroom_name}"
+
+        logger.info(f"msg -> {msg}")
+        await bot.send_at_message(message["FromWxid"], "\n" + msg, [message["SenderWxid"]])
+
 
     # MARK: - 黑名单
     async def blacklist_set(self, bot: WechatAPIClient, message: dict):
@@ -161,10 +181,7 @@ class GoodMorning(PluginBase):
         chatroom_wxid = message["FromWxid"]
         # chatroom_info = await bot.get_chatroom_info(message['FromWxid'])
         # chatroom_nickname = chatroom_info.get("NickName").get("string")
-        # chatroom_nickname = await bot.get_chatroom_nickname(chatroom_wxid)
-
-        chatroom_info = await bot.get_chatroom_name(chatroom_wxid)
-        chatroom_nickname = chatroom_info.get("room_name")
+        chatroom_nickname = await bot.get_chatroom_nickname(chatroom_wxid)
         logger.info(f"msg --> {chatroom_nickname}")
 
         ok = self.db.add_weather(chatroom_wxid=chatroom_wxid, chatroom_nickname=chatroom_nickname,city=city)
